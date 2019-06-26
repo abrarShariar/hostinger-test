@@ -2,7 +2,7 @@ import React from 'react';
 import SmartDataTable from 'react-smart-data-table';
 import LoaderBox from './LoaderBox';
 import './DataTable.css';
-import { Container } from 'semantic-ui-react';
+import { Container, Pagination } from 'semantic-ui-react';
 
 const sematicUI = {
   segment: 'ui basic segment',
@@ -16,7 +16,10 @@ class DataTable extends React.Component {
     this.state = {
       bookList: [],
       totalBooks: 0,
-      lastClickedBook: {}
+      lastClickedBook: {},
+      offset: 0,
+      totalPages: 0,
+      perPage: 20
     }
   }
 
@@ -26,7 +29,7 @@ class DataTable extends React.Component {
   }
 
   setData = async () => {
-    const URL = `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?api-key=${process.env.REACT_APP_API_KEY}`;
+    const URL = `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?offset=${this.state.offset}&api-key=${process.env.REACT_APP_API_KEY}`;
     try {
       const result = await fetch(URL);
       const data = await result.json();
@@ -44,7 +47,8 @@ class DataTable extends React.Component {
 
       this.setState({
         bookList: dataList,
-        totalBooks: data.num_results
+        totalBooks: data.num_results,
+        totalPages: data.num_results/this.state.perPage
       });
 
     } catch (err) {
@@ -58,10 +62,19 @@ class DataTable extends React.Component {
       })
   }
 
-
-
   render () {
     const { bookList, lastClickedBook } = this.state;
+
+    const PaginatorBox = ({
+      activePage, totalPages, rows, perPage, onPageChange
+    }) => {
+      console.log(activePage, totalPages, rows, perPage);
+      return (
+        <Container textAlign="center">
+          <Pagination activePage={activePage} totalPages={this.state.totalPages} />
+        </Container>
+      )
+    }
 
     return (
       <div>
@@ -84,6 +97,8 @@ class DataTable extends React.Component {
                     sortable
                     className={sematicUI.table}
                     onRowClick={this.bookRowClick}
+                    perPage="20"
+                    paginator={PaginatorBox}
                   />
                 </div>
               </div>
