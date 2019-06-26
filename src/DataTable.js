@@ -19,23 +19,22 @@ class DataTable extends React.Component {
       lastClickedBook: {},
       offset: 0,
       totalPages: 0,
-      perPage: 20
+      perPage: 20,
+      activePage: 1
     }
   }
 
   componentDidMount () {
-    // to-do: move http stuffs to service
-    this.setData();
+    this.setData(0);
   }
 
-  setData = async () => {
-    const URL = `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?offset=${this.state.offset}&api-key=${process.env.REACT_APP_API_KEY}`;
+  setData = async (offset) => {
+    const URL = `https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?offset=${offset}&api-key=${process.env.REACT_APP_API_KEY}`;
     try {
       const result = await fetch(URL);
       const data = await result.json();
       let dataList = [];
       data.results.forEach(item => {
-        console.log(item);
         let filteredItem = {
           author: item.author,
           title: item.title,
@@ -59,7 +58,15 @@ class DataTable extends React.Component {
  bookRowClick = (even, { rowData, rowIndex, tableData }) => {
       this.setState({
         lastClickedBook: rowData
-      })
+      });
+  }
+
+  handlePaginationChange = (e, { activePage }) => {
+    this.setState({
+      offset: (activePage - 1) * this.state.perPage,
+      activePage: activePage
+    });
+    this.setData((activePage - 1) * this.state.perPage);
   }
 
   render () {
@@ -68,10 +75,9 @@ class DataTable extends React.Component {
     const PaginatorBox = ({
       activePage, totalPages, rows, perPage, onPageChange
     }) => {
-      console.log(activePage, totalPages, rows, perPage);
       return (
         <Container textAlign="center">
-          <Pagination activePage={activePage} totalPages={this.state.totalPages} />
+          <Pagination activePage={this.state.activePage} totalPages={this.state.totalPages} onPageChange={this.handlePaginationChange} />
         </Container>
       )
     }
