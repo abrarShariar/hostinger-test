@@ -55,10 +55,11 @@ class DataTable extends React.Component {
     }
   }
 
- bookRowClick = (even, { rowData, rowIndex, tableData }) => {
-      this.setState({
-        lastClickedBook: rowData
-      });
+ bookRowClick = (e, { rowData, rowIndex, tableData }) => {
+   console.log(rowIndex);
+   this.setState({
+     lastClickedBook: rowData
+   });
   }
 
   handlePaginationChange = (e, { activePage }) => {

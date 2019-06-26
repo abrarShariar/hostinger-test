@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Loader, } from 'semantic-ui-react';
+import { Dimmer, Loader } from 'semantic-ui-react';
 
 class LoaderBox extends React.Component {
   render () {
