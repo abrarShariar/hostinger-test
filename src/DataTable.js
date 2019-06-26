@@ -1,24 +1,13 @@
 import React from 'react';
 import SmartDataTable from 'react-smart-data-table';
 import LoaderBox from './LoaderBox';
+import './DataTable.css';
+import { Container } from 'semantic-ui-react';
 
 const sematicUI = {
   segment: 'ui basic segment',
-  message: 'ui message',
-  input: 'ui icon input',
-  searchIcon: 'search icon',
-  rowsIcon: 'numbered list icon',
   table: 'ui compact selectable table',
-  select: 'ui dropdown',
-  refresh: 'ui labeled primary icon button',
-  refreshIcon: 'sync alternate icon',
-  change: 'ui labeled secondary icon button',
-  changeIcon: 'exchange icon',
-  checkbox: 'ui toggle checkbox',
-  loader: 'ui active text loader',
-  deleteIcon: 'trash red icon',
 }
-
 
 class DataTable extends React.Component {
 
@@ -26,7 +15,8 @@ class DataTable extends React.Component {
     super(props);
     this.state = {
       bookList: [],
-      totalBooks: 0
+      totalBooks: 0,
+      lastClickedBook: {}
     }
   }
 
@@ -42,7 +32,7 @@ class DataTable extends React.Component {
       const data = await result.json();
       let dataList = [];
       data.results.forEach(item => {
-        console.log(item.ranks_history);
+        console.log(item);
         let filteredItem = {
           author: item.author,
           title: item.title,
@@ -62,21 +52,41 @@ class DataTable extends React.Component {
     }
   }
 
+ bookRowClick = (even, { rowData, rowIndex, tableData }) => {
+      this.setState({
+        lastClickedBook: rowData
+      })
+  }
+
+
+
   render () {
-    const { bookList } = this.state;
+    const { bookList, lastClickedBook } = this.state;
+
     return (
       <div>
         {bookList.length > 0 ? (
-          <div className="DataTable">
-            <div className={sematicUI.segment}>
-              <SmartDataTable
-                data={bookList}
-                name="book-list-table"
-                sortable
-                className={sematicUI.table}
-              />
-            </div>
-          </div>
+              <div className="DataTable">
+                {Object.keys(lastClickedBook).length > 0 ?
+                  (<Container textAlign="center">
+                    <div className="detailsBox">
+                      <strong> Author: </strong> {lastClickedBook.author} <br/>
+                      <strong> Title: </strong> {lastClickedBook.title} <br/>
+                      <strong> Publisher: </strong> {lastClickedBook.publisher} <br/>
+                      <strong> Rank: </strong> {lastClickedBook.rank} <br/>
+                    </div>
+                  </Container>) : null
+                }
+                <div className={sematicUI.segment}>
+                  <SmartDataTable
+                    data={bookList}
+                    name="book-list-table"
+                    sortable
+                    className={sematicUI.table}
+                    onRowClick={this.bookRowClick}
+                  />
+                </div>
+              </div>
         ): (
           <LoaderBox/>
         )
