@@ -44,10 +44,12 @@ class DataTable extends React.Component {
         dataList.push(filteredItem);
       });
 
+      this.clearLastClickedRow();
       this.setState({
         bookList: dataList,
         totalBooks: data.num_results,
-        totalPages: data.num_results/this.state.perPage
+        totalPages: Math.ceil(data.num_results/this.state.perPage),
+        lastClickedBook: {}
       });
 
     } catch (err) {
@@ -56,7 +58,10 @@ class DataTable extends React.Component {
   }
 
  bookRowClick = (e, { rowData, rowIndex, tableData }) => {
-   console.log(rowIndex);
+   this.clearLastClickedRow();
+   let rowDOM = document.getElementsByTagName("tr")[rowIndex+1];
+   rowDOM.className = "selectedRow";
+   rowData['rowIndex'] = rowIndex;
    this.setState({
      lastClickedBook: rowData
    });
@@ -70,9 +75,15 @@ class DataTable extends React.Component {
     this.setData((activePage - 1) * this.state.perPage);
   }
 
+  clearLastClickedRow = () => {
+    if (Object.keys(this.state.lastClickedBook).length !== 0) {
+      let el = document.getElementsByTagName("tr")[this.state.lastClickedBook['rowIndex']+1]
+      el.className = "";
+    }
+  }
+
   render () {
     const { bookList, lastClickedBook } = this.state;
-
     const PaginatorBox = ({
       activePage, totalPages, rows, perPage, onPageChange
     }) => {
