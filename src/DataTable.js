@@ -6,7 +6,7 @@ import { Container, Pagination } from 'semantic-ui-react';
 
 const sematicUI = {
   segment: 'ui basic segment',
-  table: 'ui compact selectable table',
+  table: 'ui compact table',
 }
 
 class DataTable extends React.Component {
@@ -53,7 +53,7 @@ class DataTable extends React.Component {
       });
 
     } catch (err) {
-      console.log("Error in fetching data: ", err);
+      alert("Error in fetching data: ", err);
     }
   }
 
